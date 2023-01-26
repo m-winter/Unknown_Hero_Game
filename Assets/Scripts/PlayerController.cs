@@ -16,6 +16,8 @@ public class PlayerController : MonoBehaviour
 
     private enum MovementState {idle, running, jumping, falling};
 
+    [SerializeField] private AudioSource jumpSoundEffect;
+
     private BoxCollider2D coll;
     [SerializeField] private LayerMask jumpableGround;
   
@@ -36,6 +38,7 @@ public class PlayerController : MonoBehaviour
 
         if(Input.GetButtonDown("Jump") && IsPlayerTouchingGround()){
             player.velocity = new Vector2(player.velocity.x, jumpSpeed);
+            jumpSoundEffect.Play();
         }
 
         UpdatePlayerAnimationOnMovement();
