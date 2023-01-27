@@ -10,7 +10,6 @@ public class PlayerCollectController : MonoBehaviour
     [SerializeField] private Text fruitsText;
     [SerializeField] private AudioSource fruitPickingSound;
 
-
     private void OnTriggerEnter2D(Collider2D collider) {
         if(collider.gameObject.CompareTag("Apple")){
             Destroy(collider.gameObject);
