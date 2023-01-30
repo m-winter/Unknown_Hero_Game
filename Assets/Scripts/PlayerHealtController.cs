@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class PlayerHealtController : MonoBehaviour
 {
     [SerializeField] private AudioSource playerDieSound;
-    //[SerializeField] private Text healthText;
+    [SerializeField] private ParticleSystem blood;
     [SerializeField] private AudioSource playerHitSound;
     private Animator animator;
     private Rigidbody2D player;
@@ -66,6 +66,7 @@ public class PlayerHealtController : MonoBehaviour
         playerHearts = playerHearts - dmg;
         UpdateHearths();
         playerHitSound.Play();
+        SpreadBlood();
 
         if(playerHearts <= 0){
             Die();
@@ -85,5 +86,9 @@ public class PlayerHealtController : MonoBehaviour
     
     private void RestartLife(){
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    private void SpreadBlood(){
+        blood.Play();
     }
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField] private ParticleSystem dust;
 
     [SerializeField] private float speed = 6f;
     [SerializeField] private float jumpSpeed = 10f;
@@ -20,6 +21,19 @@ public class PlayerController : MonoBehaviour
 
     private BoxCollider2D coll;
     [SerializeField] private LayerMask jumpableGround;
+
+    
+    [SerializeField] private float speedBoostAmount = 5f;
+    [SerializeField] private float speedBoostTime = 0f;
+    [SerializeField] private bool isSpeedBoostActive = false;
+
+    [SerializeField] private float jumpBoostAmount = 5f;
+    [SerializeField] private float jumpBoostTime = 0f;
+    [SerializeField] private bool isJumpBoostActive = false;
+
+    [SerializeField] private float gravityChangeBoostAmount = -0.5f;
+    [SerializeField] private float gravityChangeBoostTime = 0f;
+    [SerializeField] private bool isGravityChangeBoostActive = false;
   
     
     void Start()
@@ -32,16 +46,45 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        UpdateTimersForActiveBoosts();
+
         directionX = Input.GetAxis("Horizontal");
+        if(isSpeedBoostActive != true){
+            player.velocity = new Vector2(directionX * speed, player.velocity.y);
+        }else{
+            player.velocity = new Vector2(directionX * (speed+speedBoostAmount), player.velocity.y);
 
-        player.velocity = new Vector2(directionX * speed, player.velocity.y);
-
+        }
         if(Input.GetButtonDown("Jump") && IsPlayerTouchingGround()){
-            player.velocity = new Vector2(player.velocity.x, jumpSpeed);
+            if(isGravityChangeBoostActive && jumpSpeed > 0f){
+                jumpSpeed = jumpSpeed * -1;
+                jumpBoostAmount = jumpBoostAmount * -1;
+            }else if(!isGravityChangeBoostActive && jumpSpeed < 0f){
+                jumpSpeed = Mathf.Abs(jumpSpeed);
+                jumpBoostAmount = Mathf.Abs(jumpBoostAmount);                
+            }
+
+            if(isJumpBoostActive != true){
+                player.velocity = new Vector2(player.velocity.x, jumpSpeed);
+            }else{
+                player.velocity = new Vector2(player.velocity.x, jumpSpeed + jumpBoostAmount);
+            }            
             jumpSoundEffect.Play();
+            CreateDust();
         }
 
         UpdatePlayerAnimationOnMovement();
+    }
+
+    private void OnTriggerEnter2D(Collider2D collider) {
+        if(collider.gameObject.CompareTag("Strawberry")){
+            isSpeedBoostActive = true;
+        }else if(collider.gameObject.CompareTag("Orange")){
+            isJumpBoostActive = true;
+        }else if(collider.gameObject.CompareTag("Melon")){
+            isGravityChangeBoostActive = true;
+            ChangePlayerGravity();
+        }
     }
 
 
@@ -68,6 +111,52 @@ public class PlayerController : MonoBehaviour
     }
 
     private bool IsPlayerTouchingGround(){
-        return Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, Vector2.down, .1f, jumpableGround);
+        if(isGravityChangeBoostActive){
+            return Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, Vector2.up, .1f, jumpableGround);
+        }else{
+             return Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, Vector2.down, .1f, jumpableGround);
+        }
     }
+
+    private void CreateDust(){
+        dust.Play();
+    }
+
+    private void ChangePlayerGravity(){
+        if(player.transform.transform.localScale == new Vector3(1, 1, 1)){
+            player.gravityScale = -2f;
+            player.transform.transform.localScale += new Vector3(0, -2, 0);
+        }        
+    }
+
+    private void UpdateTimersForActiveBoosts(){
+        if(isJumpBoostActive){
+            jumpBoostTime += Time.deltaTime;
+            if(jumpBoostTime >=5f){
+                jumpBoostTime = 0;
+                isJumpBoostActive = false;
+            }
+        }
+        if(isSpeedBoostActive){
+            speedBoostTime += Time.deltaTime;
+            if(speedBoostTime >= 5){
+                isSpeedBoostActive = false;
+                speedBoostTime = 0;
+            }
+        }
+
+        if(isGravityChangeBoostActive){
+            gravityChangeBoostTime += Time.deltaTime;
+            if(gravityChangeBoostTime >= 5f){
+                isGravityChangeBoostActive = false;
+                gravityChangeBoostTime = 0;
+                player.transform.transform.localScale += new Vector3(0, 2, 0);
+                player.gravityScale = 2f;
+            }
+        }
+        
+
+    }
+
+
 }

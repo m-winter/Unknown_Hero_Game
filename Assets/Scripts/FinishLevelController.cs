@@ -22,6 +22,5 @@ public class FinishLevelController : MonoBehaviour
 
 
     private void CompleteLevel(){
-        Debug.Log("JEBAC DISA");
     }
 }
