@@ -18,6 +18,9 @@ public class PlayerHealtController : MonoBehaviour
     [SerializeField] private Sprite fullHeart;
     [SerializeField] private Sprite emptyHeart;
 
+    [SerializeField] private float immuneEffectBoostTime = 0f;
+    [SerializeField] private bool immuneEffectBoostActive = false;
+
 
     void Start()
     {
@@ -26,19 +29,22 @@ public class PlayerHealtController : MonoBehaviour
         UpdateHearths();
         
     }
-
-
+    void Update()
+    {
+        CheckPlayerImmunity();
+    }
 
     private void OnCollisionEnter2D(Collision2D collider) {
-        if(collider.gameObject.CompareTag("Spike Trap")){
-            PlayerTakeDamage(1);       
-        } 
-
+            if(collider.gameObject.CompareTag("Spike Trap") && immuneEffectBoostActive == false){
+                PlayerTakeDamage(1);       
+            }
     }
 
     private void OnTriggerEnter2D(Collider2D collider) {
         if(collider.gameObject.CompareTag("Apple")){
             PlayerHeal(1);       
+        }else if(collider.gameObject.CompareTag("Pinapple")){
+            immuneEffectBoostActive = true;
         }
     }
 
@@ -90,5 +96,15 @@ public class PlayerHealtController : MonoBehaviour
 
     private void SpreadBlood(){
         blood.Play();
+    }
+
+    private void CheckPlayerImmunity(){
+        if(immuneEffectBoostActive){
+            immuneEffectBoostTime += Time.deltaTime;
+            if(immuneEffectBoostTime >= 10f){
+                immuneEffectBoostActive = false;
+                immuneEffectBoostTime = 0;
+            }
+        }
     }
 }

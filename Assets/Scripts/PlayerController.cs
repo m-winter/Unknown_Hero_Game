@@ -31,10 +31,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float jumpBoostTime = 0f;
     [SerializeField] private bool isJumpBoostActive = false;
 
-    [SerializeField] private float gravityChangeBoostAmount = -0.5f;
     [SerializeField] private float gravityChangeBoostTime = 0f;
-    [SerializeField] private bool isGravityChangeBoostActive = false;
-  
+    [SerializeField] private bool isGravityChangeBoostActive = false; 
     
     void Start()
     {        
@@ -153,8 +151,7 @@ public class PlayerController : MonoBehaviour
                 player.transform.transform.localScale += new Vector3(0, 2, 0);
                 player.gravityScale = 2f;
             }
-        }
-        
+        }        
 
     }
 

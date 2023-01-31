@@ -23,6 +23,9 @@ public class PlayerCollectController : MonoBehaviour
         }else if(collider.gameObject.CompareTag("Melon")){
             Destroy(collider.gameObject);
             AddFruitToCounter(15);
+        }else if(collider.gameObject.CompareTag("Pinapple")){
+            Destroy(collider.gameObject);
+            AddFruitToCounter(7);
         }
     }
 
