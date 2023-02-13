@@ -20,6 +20,7 @@ public class PlayerHealtController : MonoBehaviour
 
     [SerializeField] private float immuneEffectBoostTime = 0f;
     [SerializeField] private bool immuneEffectBoostActive = false;
+    [SerializeField] private ParticleSystem shield;
 
 
     void Start()
@@ -45,6 +46,7 @@ public class PlayerHealtController : MonoBehaviour
             PlayerHeal(1);       
         }else if(collider.gameObject.CompareTag("Pinapple")){
             immuneEffectBoostActive = true;
+            ApplyShieldAnimation();
         }
     }
 
@@ -107,4 +109,9 @@ public class PlayerHealtController : MonoBehaviour
             }
         }
     }
+
+    private void ApplyShieldAnimation(){
+        shield.Play();
+    }
+
 }

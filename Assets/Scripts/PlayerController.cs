@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -33,6 +35,11 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private float gravityChangeBoostTime = 0f;
     [SerializeField] private bool isGravityChangeBoostActive = false; 
+
+    [SerializeField] private Image[] currentBoosts;
+    [SerializeField] private Sprite speedBoostImage;
+    [SerializeField] private Sprite jumpBoostImage;
+    [SerializeField] private Sprite gravityBoostImage;
     
     void Start()
     {        
@@ -40,6 +47,7 @@ public class PlayerController : MonoBehaviour
         playerAnimator = GetComponent<Animator>();
         sprite = GetComponent<SpriteRenderer>();
         coll = GetComponent<BoxCollider2D>();
+        ResetBoostsImages();
     }
 
     void Update()
@@ -77,10 +85,13 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collider) {
         if(collider.gameObject.CompareTag("Strawberry")){
             isSpeedBoostActive = true;
+            ManageBoostIcons("Sprint", true);
         }else if(collider.gameObject.CompareTag("Orange")){
             isJumpBoostActive = true;
+            ManageBoostIcons("Jump", true);
         }else if(collider.gameObject.CompareTag("Melon")){
             isGravityChangeBoostActive = true;
+            ManageBoostIcons("Gravity", true);
             ChangePlayerGravity();
         }
     }
@@ -133,6 +144,7 @@ public class PlayerController : MonoBehaviour
             if(jumpBoostTime >=5f){
                 jumpBoostTime = 0;
                 isJumpBoostActive = false;
+                ManageBoostIcons("Jump", false);
             }
         }
         if(isSpeedBoostActive){
@@ -140,6 +152,7 @@ public class PlayerController : MonoBehaviour
             if(speedBoostTime >= 5){
                 isSpeedBoostActive = false;
                 speedBoostTime = 0;
+                ManageBoostIcons("Sprint", false);
             }
         }
 
@@ -150,9 +163,24 @@ public class PlayerController : MonoBehaviour
                 gravityChangeBoostTime = 0;
                 player.transform.transform.localScale += new Vector3(0, 2, 0);
                 player.gravityScale = 2f;
+                ManageBoostIcons("Gravity", false);
             }
         }        
 
+    }
+
+    public void ResetBoostsImages(){
+        for(int i = 0; i < currentBoosts.Length; i++){
+            currentBoosts[i].enabled = false;
+        }
+    }
+
+    public void ManageBoostIcons(string boostName, bool visibilityValue){
+        for(int i = 0; i < currentBoosts.Length; i++){
+            if(currentBoosts[i].name == boostName){
+               currentBoosts[i].enabled = visibilityValue; 
+            }
+        }
     }
 
 
